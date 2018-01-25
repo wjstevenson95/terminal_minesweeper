@@ -113,8 +113,6 @@ class Minesweeper:
 						else:
 							self.board[x + dx][y + dy].hidden = False
 
-
-
 	def game_over(self):
 		return self.is_game_over
 
@@ -148,6 +146,7 @@ if __name__ == "__main__":
 		print("---> CHOICES <---")
 		print("--> reveal")
 		print("--> flag")
+		print("--> exit")
 		choice = raw_input("?: ")
 
 		if choice == "reveal":
@@ -158,6 +157,9 @@ if __name__ == "__main__":
 			flag_x = raw_input("flag_x: ")
 			flag_y = raw_input("flag_y: ")
 			board.place_flag(int(flag_x),int(flag_y))
+		elif choice == "exit":
+			print("---> EXITED, GOODBYE! <---")
+			break
 		else:
 			print("Invalid choice...")
 			continue
