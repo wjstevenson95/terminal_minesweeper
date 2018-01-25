@@ -30,11 +30,10 @@ class Minesweeper:
 						(-1,0),			(1,0),
 						(-1,-1),(0,-1),(1,-1)]
 
-		self.board = [[Cell(True, False, 0, x, y) for x in range(width)] for y in range(self.height)]
+		self.board = [[Cell(True, True, 0, x, y) for x in range(width)] for y in range(self.height)]
 
 		self.__randomize_mines((self.width*self.height)//4)
 		self.__calculate_numbers()
-		self.print_board()
 
 	def __in_board_range(self, x, y):
 		return x >= 0 and x < self.width and y >= 0 and y < self.height
@@ -65,10 +64,23 @@ class Minesweeper:
 								self.board[x][y].value += 1
 
 	def reveal_cell(self, x, y):
-		pass
+		if self.__in_board_range(x,y):
+			if not self.board[x][y].is_numbered:
+				self.is_game_over = True
+				print("---> GAME OVER <---")
+			elif self.board[x][y].is_numbered:
+				self.board[x][y].hidden = False
+			else:
+				# Is a Blank
+				self.__uncover_blanks(x,y)
+		else:
+			print("---> Please choose a coordinate pair within the board range! <---")
 
 	def __uncover_blanks(self, x, y):
 		pass
+
+	def game_over(self):
+		return self.is_game_over
 
 	def print_board(self):
 		for y in range(self.height):
@@ -78,7 +90,22 @@ class Minesweeper:
 
 if __name__ == "__main__":
 
-	board = Minesweeper(4,4)
+	print("---> WELCOME TO MINESWEEPER! <---")
+	print("---> please choose the width and height of your board <---")
+	width = input("width: ")
+	height = input("height: ")
+	board = Minesweeper(int(width),int(height))
+	board.print_board()
+
+	while True:
+		print("---> CHOOSE A COORDINATE TO UNCOVER <---")
+		x = input("x: ")
+		y = input("y: ")
+		board.reveal_cell(int(x),int(y))
+		board.print_board()
+
+		if board.game_over():
+			break
 
 
 
