@@ -119,8 +119,10 @@ class Minesweeper:
 		return self.is_game_over
 
 	def print_board(self):
+		print("  ".join([str(x) for x in range(10)]) + "  " + " ".join([str(x) for x in range(10,self.width,1)]))
+		print(" ".join(["--" for x in range(self.width)]))
 		for y in range(self.height):
-			row_string = " "
+			row_string = "  "
 			print(row_string.join([self.board[x][y].cell_to_string() for x in range(self.width)]))
 
 		print("\n ###########################")
@@ -129,11 +131,13 @@ class Minesweeper:
 if __name__ == "__main__":
 
 	print("---> WELCOME TO MINESWEEPER! <---")
-	print("---> please choose the width and height of your board <---")
+	print("---> please choose the width and height of your board (up to 20) <---")
 	print("--> then choose the number of flags you have")
 	width = raw_input("width: ")
 	height = raw_input("height: ")
 	flags = raw_input("flags: ")
+	if width > 20 or height > 20:
+		
 	board = Minesweeper(int(width),int(height),int(flags))
 
 	print("To start, choose an initial coordinate...")
