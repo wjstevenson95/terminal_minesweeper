@@ -7,6 +7,7 @@ import os
 class Cell:
 	def __init__(self, state, hidden, value, x, y):
 		self.is_numbered = state #Boolean
+		self.is_flag = False
 		self.hidden = hidden # Boolean
 		self.value = value
 		self.x = x
@@ -16,16 +17,20 @@ class Cell:
 		if self.hidden:
 			return "-"
 		else:
+			if self.is_flag:
+				return "F"
+
 			if self.is_numbered:
 				return str(self.value)
 			else:
 				return "M"
 
 class Minesweeper:
-	def __init__(self, width, height):
+	def __init__(self, width, height, flags):
 		self.width = int(width)
 		self.height = int(height)
 		self.is_game_over = False
+		self.flags = flags
 		self.adjacents = [(-1,-1),(0,-1),(1,-1),
 						(-1,0),			(1,0),
 						(-1,1),(0,1),(1,1)]
@@ -66,7 +71,6 @@ class Minesweeper:
 								self.board[x][y].value += 1
 
 	def reveal_cell(self, x, y, first=False):
-
 		if first:
 			self.__randomize_mines(x,y,(self.width*self.height)//16)
 			self.__calculate_numbers()
@@ -85,6 +89,16 @@ class Minesweeper:
 						self.board[x][y].hidden = False
 		else:
 			print("---> Please choose a coordinate pair within the board range! <---")
+
+	def place_flag(self, x, y):
+		if self.__in_board_range(x,y):
+			self.board[x][y].hidden = False
+			self.board[x][y].is_flag = True
+			self.flags -= 1
+		else:
+			print("---> Please choose a coordinate pair within the board range! <---")
+
+
 
 	def __uncover_blanks(self, x, y):
 		if self.board[x][y].hidden:
@@ -109,26 +123,43 @@ class Minesweeper:
 			row_string = " "
 			print(row_string.join([self.board[x][y].cell_to_string() for x in range(self.width)]))
 
+		print("\n ###########################")
+		print("Flags Left: %d" % self.flags)
 
 if __name__ == "__main__":
 
 	print("---> WELCOME TO MINESWEEPER! <---")
 	print("---> please choose the width and height of your board <---")
-	width = input("width: ")
-	height = input("height: ")
-	board = Minesweeper(int(width),int(height))
+	print("--> then choose the number of flags you have")
+	width = raw_input("width: ")
+	height = raw_input("height: ")
+	flags = raw_input("flags: ")
+	board = Minesweeper(int(width),int(height),int(flags))
 
 	print("To start, choose an initial coordinate...")
-	first_x = input("first x: ")
-	first_y = input("first y: ")
+	first_x = raw_input("first x: ")
+	first_y = raw_input("first y: ")
 	board.reveal_cell(int(first_x),int(first_y),True)
 	board.print_board()
 
 	while True:
-		print("---> CHOOSE A COORDINATE TO UNCOVER <---")
-		x = input("x: ")
-		y = input("y: ")
-		board.reveal_cell(int(x),int(y))
+		print("---> CHOICES <---")
+		print("--> reveal")
+		print("--> flag")
+		choice = raw_input("?: ")
+
+		if choice == "reveal":
+			x = raw_input("x: ")
+			y = raw_input("y: ")
+			board.reveal_cell(int(x),int(y))
+		elif choice == "flag":
+			flag_x = raw_input("flag_x: ")
+			flag_y = raw_input("flag_y: ")
+			board.place_flag(int(flag_x),int(flag_y))
+		else:
+			print("Invalid choice...")
+			continue
+		
 		board.print_board()
 
 		if board.game_over():
