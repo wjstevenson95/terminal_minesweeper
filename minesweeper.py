@@ -25,9 +25,12 @@ class Minesweeper:
 
 	def __randomize_mines(self, mines):
 
-		mines_left = mines
-
-
 	def __calculate_numbers(self):
+
+	def __uncover_blanks(self, x, y):
+
+	def reveal_cell(self, x, y):
+
+	def print_board(self):
 
 
