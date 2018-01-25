@@ -16,7 +16,10 @@ class Cell:
 		if self.hidden:
 			return "-"
 		else:
-			return str(self.value)
+			if self.is_numbered:
+				return str(self.value)
+			else:
+				return "M"
 
 class Minesweeper:
 	def __init__(self, width, height):
@@ -30,7 +33,11 @@ class Minesweeper:
 		self.board = [[Cell(True, False, 0, x, y) for x in range(width)] for y in range(self.height)]
 
 		self.__randomize_mines((self.width*self.height)//4)
+		self.__calculate_numbers()
 		self.print_board()
+
+	def __in_board_range(self, x, y):
+		return x >= 0 and x < self.width and y >= 0 and y < self.height
 
 
 	def __randomize_mines(self, mines):
@@ -48,7 +55,14 @@ class Minesweeper:
 				continue
 
 	def __calculate_numbers(self):
-		pass
+		for y in range(self.height):
+			for x in range(self.width):
+				if self.board[x][y].is_numbered:
+					# If not a mine, go through adjacents
+					for tuple in self.adjacents:
+						if self.__in_board_range(x + tuple[0],y + tuple[1]):
+							if not self.board[x + tuple[0]][y + tuple[1]].is_numbered:
+								self.board[x][y].value += 1
 
 	def reveal_cell(self, x, y):
 		pass
