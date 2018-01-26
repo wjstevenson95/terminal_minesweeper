@@ -26,11 +26,11 @@ class Cell:
 				return "M"
 
 class Minesweeper:
-	def __init__(self, width, height, flags):
+	def __init__(self, width, height):
 		self.width = int(width)
 		self.height = int(height)
 		self.is_game_over = False
-		self.flags = flags
+		self.flags = self.width*self.height//16
 		self.adjacents = [(-1,-1),(0,-1),(1,-1),
 						(-1,0),			(1,0),
 						(-1,1),(0,1),(1,1)]
@@ -92,9 +92,12 @@ class Minesweeper:
 
 	def place_flag(self, x, y):
 		if self.__in_board_range(x,y):
-			self.board[x][y].hidden = False
-			self.board[x][y].is_flag = True
-			self.flags -= 1
+			if self.flags:
+				self.board[x][y].hidden = False
+				self.board[x][y].is_flag = True
+				self.flags -= 1
+			else:
+				print("--> NO MORE FLAGS TO AVAILABLE - GOOD LUCK! <---")
 		else:
 			print("---> Please choose a coordinate pair within the board range! <---")
 
@@ -116,6 +119,15 @@ class Minesweeper:
 	def game_over(self):
 		return self.is_game_over
 
+	def game_won(self):
+		unhidden_cells = self.width * self.height
+		for y in range(self.height):
+			for x in range(self.width):
+				if not self.board[x][y].hidden:
+					unhidden_cells -= 1
+
+		return unhidden_cells == 0
+
 	def print_board(self):
 		print("    " + "  ".join([str(x) for x in range(10)]) + "  " + " ".join([str(x) for x in range(10,self.width,1)]))
 		print("    " + " ".join(["--" for x in range(self.width)]))
@@ -130,16 +142,23 @@ if __name__ == "__main__":
 
 	print("---> WELCOME TO MINESWEEPER! <---")
 	print("---> please choose the width and height of your board (up to 20) <---")
-	print("--> then choose the number of flags you have")
 	width = raw_input("width: ")
 	height = raw_input("height: ")
-	flags = raw_input("flags: ")
-	board = Minesweeper(int(width),int(height),int(flags))
+	board = Minesweeper(int(width),int(height))
 
 	print("To start, choose an initial coordinate...")
-	first_x = raw_input("first x: ")
-	first_y = raw_input("first y: ")
-	board.reveal_cell(int(first_x),int(first_y),True)
+	while True:
+		first_x = int(raw_input("first x: "))
+		first_y = int(raw_input("first y: "))
+		if first_x < 0 or first_x > int(width):
+			print("invalid x coordinate")
+			continue
+		if first_y < 0 or first_y > int(height):
+			print("invalid y coordinate")
+			continue
+		board.reveal_cell(int(first_x),int(first_y),True)
+		break
+
 	board.print_board()
 
 	while True:
@@ -168,6 +187,11 @@ if __name__ == "__main__":
 
 		if board.game_over():
 			print("---> GAME OVER <---")
+			break
+
+		if board.game_won():
+			print("---> WINNER WINNER! <---")
+			print("---> CONGRATULATIONS <---")
 			break
 
 
